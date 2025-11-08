@@ -6,7 +6,7 @@ import { SIGHT_WORDS } from '../data/content';
 
 interface WordCatcherProps {
   currentCoins: number;
-  onComplete: (coinsEarned: number, score: number) => void;
+  onComplete: (coinsEarned: number, score: number, totalWords: number) => void;
   onBack: () => void;
 }
 
@@ -77,7 +77,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
         const earned = 5 + correctCount + (correct ? 1 : 0); // 5 base + 1 per correct
         setCoinsEarned(earned);
         setGameState('results');
-        onComplete(earned, correctCount + (correct ? 1 : 0));
+        onComplete(earned, correctCount + (correct ? 1 : 0), SIGHT_WORDS.length);
       }
     }, 1500);
   };

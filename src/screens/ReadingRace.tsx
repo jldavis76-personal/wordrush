@@ -6,7 +6,7 @@ import { READING_PASSAGE, COMPREHENSION_QUESTIONS } from '../data/content';
 
 interface ReadingRaceProps {
   currentCoins: number;
-  onComplete: (coinsEarned: number, wpm: number, score: number) => void;
+  onComplete: (coinsEarned: number, wpm: number, score: number, totalQuestions: number) => void;
   onBack: () => void;
 }
 
@@ -61,7 +61,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
       const earned = 10 + (correctCount * 5);
       setCoinsEarned(earned);
       setGameState('results');
-      onComplete(earned, wpm, correctCount);
+      onComplete(earned, wpm, correctCount, COMPREHENSION_QUESTIONS.length);
     }
   };
 

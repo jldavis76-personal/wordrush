@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Profiles, ProfileId, UnlockableItem } from './types';
+import { Profiles, ProfileId, UnlockableItem, ReadingActivityResult, WordActivityResult } from './types';
 import { ProfileSelection } from './screens/ProfileSelection';
 import { ActivitySelection } from './screens/ActivitySelection';
 import { ReadingRace } from './screens/ReadingRace';
@@ -28,6 +28,7 @@ const getInitialProfiles = (): Profiles => {
       age: 8,
       coins: 0,
       unlockedItems: [],
+      activityHistory: [],
     },
     son: {
       id: 'son',
@@ -35,6 +36,7 @@ const getInitialProfiles = (): Profiles => {
       age: 5,
       coins: 0,
       unlockedItems: [],
+      activityHistory: [],
     },
   };
 };
@@ -87,14 +89,45 @@ function App() {
     setCurrentScreen('activity-selection');
   };
 
-  const handleActivityComplete = (coinsEarned: number) => {
+  const handleReadingComplete = (coinsEarned: number, wpm: number, score: number, totalQuestions: number) => {
     if (!currentProfileId) return;
+
+    const result: ReadingActivityResult = {
+      timestamp: new Date(),
+      coinsEarned,
+      activityType: 'reading',
+      wpm,
+      score,
+      totalQuestions,
+    };
 
     setProfiles((prev) => ({
       ...prev,
       [currentProfileId]: {
         ...prev[currentProfileId],
         coins: prev[currentProfileId].coins + coinsEarned,
+        activityHistory: [...prev[currentProfileId].activityHistory, result],
+      },
+    }));
+  };
+
+  const handleWordComplete = (coinsEarned: number, score: number, totalWords: number) => {
+    if (!currentProfileId) return;
+
+    const result: WordActivityResult = {
+      timestamp: new Date(),
+      coinsEarned,
+      activityType: 'words',
+      score,
+      totalWords,
+    };
+
+    setProfiles((prev) => ({
+      ...prev,
+      [currentProfileId]: {
+        ...prev[currentProfileId],
+        coins: prev[currentProfileId].coins + coinsEarned,
+        activityHistory: [...prev[currentProfileId].activityHistory, result],
       },
     }));
   };
@@ -133,7 +166,7 @@ function App() {
       {currentScreen === 'reading-race' && currentProfile && (
         <ReadingRace
           currentCoins={currentProfile.coins}
-          onComplete={handleActivityComplete}
+          onComplete={handleReadingComplete}
           onBack={handleBackToMenu}
         />
       )}
@@ -141,7 +174,7 @@ function App() {
       {currentScreen === 'word-catcher' && currentProfile && (
         <WordCatcher
           currentCoins={currentProfile.coins}
-          onComplete={handleActivityComplete}
+          onComplete={handleWordComplete}
           onBack={handleBackToMenu}
         />
       )}
