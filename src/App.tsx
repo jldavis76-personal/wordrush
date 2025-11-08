@@ -1,15 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Profiles, ProfileId, UnlockableItem } from './types';
 import { ProfileSelection } from './screens/ProfileSelection';
 import { ActivitySelection } from './screens/ActivitySelection';
 import { ReadingRace } from './screens/ReadingRace';
 import { WordCatcher } from './screens/WordCatcher';
 import { AvatarShop } from './screens/AvatarShop';
+import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
 
 type Screen = 'profile-selection' | 'activity-selection' | 'reading-race' | 'word-catcher' | 'shop';
 
-function App() {
-  const [profiles, setProfiles] = useState<Profiles>({
+/**
+ * Load profiles from localStorage or use defaults
+ */
+const getInitialProfiles = (): Profiles => {
+  if (isStorageAvailable()) {
+    const loaded = loadProfiles();
+    if (loaded) {
+      return loaded;
+    }
+  }
+
+  // Default profiles if nothing saved
+  return {
     daughter: {
       id: 'daughter',
       name: 'Daughter',
@@ -24,12 +36,30 @@ function App() {
       coins: 0,
       unlockedItems: [],
     },
-  });
+  };
+};
+
+function App() {
+  const [profiles, setProfiles] = useState<Profiles>(getInitialProfiles());
 
   const [currentProfileId, setCurrentProfileId] = useState<ProfileId | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('profile-selection');
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
+
+  // Auto-save to localStorage whenever profiles change
+  useEffect(() => {
+    if (isStorageAvailable()) {
+      saveProfiles(profiles);
+    }
+  }, [profiles]);
+
+  // Check storage availability on mount
+  useEffect(() => {
+    if (!isStorageAvailable()) {
+      alert('Warning: Browser storage is not available. Progress will not be saved.');
+    }
+  }, []);
 
   const handleSelectProfile = (profileId: ProfileId) => {
     setCurrentProfileId(profileId);
