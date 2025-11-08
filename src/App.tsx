@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Profiles, ProfileId, UnlockableItem, ReadingActivityResult, WordActivityResult } from './types';
 import { ProfileSelection } from './screens/ProfileSelection';
 import { ActivitySelection } from './screens/ActivitySelection';
@@ -16,10 +16,12 @@ const getInitialProfiles = (): Profiles => {
   if (isStorageAvailable()) {
     const loaded = loadProfiles();
     if (loaded) {
+      console.log('[App] Loaded profiles from storage:', loaded);
       return loaded;
     }
   }
 
+  console.log('[App] Using default profiles');
   // Default profiles if nothing saved
   return {
     daughter: {
@@ -42,16 +44,23 @@ const getInitialProfiles = (): Profiles => {
 };
 
 function App() {
-  const [profiles, setProfiles] = useState<Profiles>(getInitialProfiles());
+  const [profiles, setProfiles] = useState<Profiles>(getInitialProfiles);
+  const isFirstRender = useRef(true);
 
   const [currentProfileId, setCurrentProfileId] = useState<ProfileId | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('profile-selection');
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
 
-  // Auto-save to localStorage whenever profiles change
+  // Auto-save to localStorage whenever profiles change (skip first render)
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     if (isStorageAvailable()) {
+      console.log('[App] Auto-saving profiles:', profiles);
       saveProfiles(profiles);
     }
   }, [profiles]);

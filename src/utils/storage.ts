@@ -49,14 +49,17 @@ export const loadProfiles = (): Profiles | null => {
 
     const data: StorageData = JSON.parse(stored);
 
+    // Ensure profiles have all required fields
+    const migratedProfiles = ensureProfileFields(data.profiles);
+
     // Version migration (future-proofing)
     if (data.version !== STORAGE_VERSION) {
       console.log(`[Storage] Migrating from v${data.version} to v${STORAGE_VERSION}`);
-      return migrateData(data);
+      return migrateData({ ...data, profiles: migratedProfiles });
     }
 
-    console.log('[Storage] Profiles loaded successfully');
-    return data.profiles;
+    console.log('[Storage] Profiles loaded successfully', migratedProfiles);
+    return migratedProfiles;
   } catch (error) {
     console.error('[Storage] Failed to load profiles:', error);
 
@@ -131,6 +134,27 @@ export const getStorageInfo = (): { used: number; available: number } => {
     console.error('[Storage] Failed to get storage info:', error);
     return { used: 0, available: 0 };
   }
+};
+
+/**
+ * Ensure profiles have all required fields (for backwards compatibility)
+ */
+const ensureProfileFields = (profiles: any): Profiles => {
+  const ensureProfile = (profile: any) => ({
+    ...profile,
+    activityHistory: (profile.activityHistory || []).map((activity: any) => ({
+      ...activity,
+      // Convert timestamp string back to Date object
+      timestamp: activity.timestamp ? new Date(activity.timestamp) : new Date(),
+    })),
+    unlockedItems: profile.unlockedItems || [],
+    coins: profile.coins || 0,
+  });
+
+  return {
+    daughter: ensureProfile(profiles.daughter || {}),
+    son: ensureProfile(profiles.son || {}),
+  };
 };
 
 /**
