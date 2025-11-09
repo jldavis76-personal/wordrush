@@ -3,6 +3,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { CoinDisplay } from '../components/CoinDisplay';
 import { ReadingPassage } from '../types';
+import { soundManager } from '../utils/soundManager';
 
 interface ReadingRaceProps {
   currentCoins: number;
@@ -34,6 +35,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
 
   const startReading = () => {
     setStartTime(Date.now());
+    soundManager.play('start');
   };
 
   const finishReading = () => {
@@ -51,6 +53,10 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
     const newAnswers = [...answers, answerIndex];
     setAnswers(newAnswers);
 
+    // Play sound based on whether answer is correct
+    const isCorrect = answerIndex === currentPassage.questions[currentQuestion].correctIndex;
+    soundManager.play(isCorrect ? 'correct' : 'wrong');
+
     if (currentQuestion < currentPassage.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -66,6 +72,10 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
       // Calculate coins: 10 base + 5 per correct answer
       const earned = 10 + (correctCount * 5);
       setCoinsEarned(earned);
+
+      // Play coin sound on completion
+      soundManager.play('coin');
+
       setGameState('results');
       onComplete(earned, wpm, correctCount, currentPassage.questions.length, currentPassage.id);
     }

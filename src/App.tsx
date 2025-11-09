@@ -10,7 +10,9 @@ import { ParentSettings } from './screens/ParentSettings';
 import { PassageSelector } from './components/PassageSelector';
 import { BadgeUnlockNotification } from './components/BadgeUnlockNotification';
 import { PinEntry } from './components/PinEntry';
+import { SoundToggle } from './components/SoundToggle';
 import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
+import { soundManager } from './utils/soundManager';
 import { READING_PASSAGES } from './data/content';
 import { checkForNewBadges } from './utils/badgeChecker';
 import { updateStreak } from './utils/streakTracker';
@@ -92,10 +94,16 @@ function App() {
     }
   }, []);
 
-  // Save sound preference to localStorage
+  // Save sound preference to localStorage and update sound manager
   useEffect(() => {
     localStorage.setItem('wordrush_sound_enabled', JSON.stringify(soundEnabled));
+    soundManager.setEnabled(soundEnabled);
   }, [soundEnabled]);
+
+  // Initialize sound manager on mount
+  useEffect(() => {
+    soundManager.setEnabled(soundEnabled);
+  }, []);
 
   const handleSelectProfile = (profileId: ProfileId) => {
     setCurrentProfileId(profileId);
@@ -305,8 +313,16 @@ function App() {
     });
   };
 
+  const handleToggleSound = (enabled: boolean) => {
+    setSoundEnabled(enabled);
+    soundManager.setEnabled(enabled);
+  };
+
   return (
     <div className="min-h-screen">
+      {/* Global Sound Toggle Button */}
+      <SoundToggle enabled={soundEnabled} onToggle={handleToggleSound} />
+
       {currentScreen === 'profile-selection' && (
         <ProfileSelection
           profiles={profiles}

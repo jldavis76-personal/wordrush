@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/Avatar';
 import { CoinDisplay } from '../components/CoinDisplay';
 import { SHOP_ITEMS } from '../data/content';
+import { soundManager } from '../utils/soundManager';
 
 interface AvatarShopProps {
   profile: Profile;
@@ -20,6 +21,9 @@ export const AvatarShop: React.FC<AvatarShopProps> = ({
   const [justUnlocked, setJustUnlocked] = useState<UnlockableItem | null>(null);
 
   const handleUnlock = (itemId: UnlockableItem, cost: number) => {
+    // Play purchase sound
+    soundManager.play('purchase');
+
     onUnlockItem(itemId, cost);
     setJustUnlocked(itemId);
 
