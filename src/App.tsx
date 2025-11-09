@@ -16,10 +16,12 @@ const getInitialProfiles = (): Profiles => {
   if (isStorageAvailable()) {
     const loaded = loadProfiles();
     if (loaded) {
+      console.log('[App] Loaded profiles from storage:', loaded);
       return loaded;
     }
   }
 
+  console.log('[App] Using default profiles');
   // Default profiles if nothing saved
   return {
     daughter: {
@@ -42,7 +44,7 @@ const getInitialProfiles = (): Profiles => {
 };
 
 function App() {
-  const [profiles, setProfiles] = useState<Profiles>(getInitialProfiles());
+  const [profiles, setProfiles] = useState<Profiles>(getInitialProfiles);
 
   const [currentProfileId, setCurrentProfileId] = useState<ProfileId | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('profile-selection');
@@ -52,6 +54,7 @@ function App() {
   // Auto-save to localStorage whenever profiles change
   useEffect(() => {
     if (isStorageAvailable()) {
+      console.log('[App] Auto-saving profiles:', profiles);
       saveProfiles(profiles);
     }
   }, [profiles]);
