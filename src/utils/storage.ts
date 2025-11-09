@@ -20,8 +20,13 @@ export const saveProfiles = (profiles: Profiles): boolean => {
       lastUpdated: new Date().toISOString(),
     };
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    console.log('[Storage] Profiles saved successfully');
+    const jsonString = JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY, jsonString);
+    console.log('[Storage] Profiles saved successfully:', {
+      daughter: { coins: profiles.daughter.coins, items: profiles.daughter.unlockedItems.length },
+      son: { coins: profiles.son.coins, items: profiles.son.unlockedItems.length },
+      size: `${(jsonString.length / 1024).toFixed(2)} KB`
+    });
     return true;
   } catch (error) {
     console.error('[Storage] Failed to save profiles:', error);
