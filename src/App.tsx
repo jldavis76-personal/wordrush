@@ -6,14 +6,16 @@ import { ReadingRace } from './screens/ReadingRace';
 import { WordCatcher } from './screens/WordCatcher';
 import { AvatarShop } from './screens/AvatarShop';
 import { ProgressDashboard } from './screens/ProgressDashboard';
+import { ParentSettings } from './screens/ParentSettings';
 import { PassageSelector } from './components/PassageSelector';
 import { BadgeUnlockNotification } from './components/BadgeUnlockNotification';
+import { PinEntry } from './components/PinEntry';
 import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
 import { READING_PASSAGES } from './data/content';
 import { checkForNewBadges } from './utils/badgeChecker';
 import { updateStreak } from './utils/streakTracker';
 
-type Screen = 'profile-selection' | 'activity-selection' | 'passage-selection' | 'reading-race' | 'word-catcher' | 'shop' | 'progress-dashboard';
+type Screen = 'profile-selection' | 'activity-selection' | 'passage-selection' | 'reading-race' | 'word-catcher' | 'shop' | 'progress-dashboard' | 'parent-settings';
 
 /**
  * Load profiles from localStorage or use defaults
@@ -66,6 +68,12 @@ function App() {
   const [selectedPassage, setSelectedPassage] = useState<ReadingPassage | null>(null);
   // Badge unlock notifications - will be used in Task 3 for UI notifications
   const [newlyUnlockedBadges, setNewlyUnlockedBadges] = useState<BadgeId[]>([]);
+  // Parent settings states
+  const [showPinEntry, setShowPinEntry] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const stored = localStorage.getItem('wordrush_sound_enabled');
+    return stored !== null ? JSON.parse(stored) : true;
+  });
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
 
@@ -83,6 +91,11 @@ function App() {
       alert('Warning: Browser storage is not available. Progress will not be saved.');
     }
   }, []);
+
+  // Save sound preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('wordrush_sound_enabled', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
 
   const handleSelectProfile = (profileId: ProfileId) => {
     setCurrentProfileId(profileId);
@@ -111,6 +124,15 @@ function App() {
 
   const handleShowProgress = () => {
     setCurrentScreen('progress-dashboard');
+  };
+
+  const handleShowSettings = () => {
+    setShowPinEntry(true);
+  };
+
+  const handlePinCorrect = () => {
+    setShowPinEntry(false);
+    setCurrentScreen('parent-settings');
   };
 
   const handleBackToMenu = () => {
@@ -298,6 +320,7 @@ function App() {
           onStartActivity={handleStartActivity}
           onGoToShop={handleGoToShop}
           onShowProgress={handleShowProgress}
+          onShowSettings={handleShowSettings}
           onChangeProfile={handleChangeProfile}
         />
       )}
@@ -342,6 +365,24 @@ function App() {
         <ProgressDashboard
           profile={currentProfile}
           onBack={handleBackToMenu}
+        />
+      )}
+
+      {currentScreen === 'parent-settings' && (
+        <ParentSettings
+          profiles={profiles}
+          onUpdateProfiles={setProfiles}
+          onBack={handleBackToMenu}
+          soundEnabled={soundEnabled}
+          onToggleSound={setSoundEnabled}
+        />
+      )}
+
+      {/* PIN Entry Modal */}
+      {showPinEntry && (
+        <PinEntry
+          onCorrectPin={handlePinCorrect}
+          onCancel={() => setShowPinEntry(false)}
         />
       )}
 

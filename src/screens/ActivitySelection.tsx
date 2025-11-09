@@ -11,6 +11,7 @@ interface ActivitySelectionProps {
   onStartActivity: (activity: 'reading' | 'words', wordSetId?: number) => void;
   onGoToShop: () => void;
   onShowProgress: () => void;
+  onShowSettings: () => void;
   onChangeProfile: () => void;
 }
 
@@ -19,6 +20,7 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
   onStartActivity,
   onGoToShop,
   onShowProgress,
+  onShowSettings,
   onChangeProfile,
 }) => {
   // State for word set selection (default to profile's current word set or 1)
@@ -164,6 +166,17 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
                 <h2 className="text-2xl font-bold text-primary">View Progress</h2>
                 <p className="text-lg text-textSecondary">
                   See your stats and achievements
+                </p>
+              </div>
+            </Card>
+
+            {/* Parent Settings Button */}
+            <Card hoverable onClick={onShowSettings}>
+              <div className="text-center space-y-4">
+                <div className="text-6xl">⚙️</div>
+                <h2 className="text-2xl font-bold text-gray-700">Parent Settings</h2>
+                <p className="text-lg text-textSecondary">
+                  Manage profiles and app settings
                 </p>
               </div>
             </Card>
