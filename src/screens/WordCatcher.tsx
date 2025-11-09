@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { CoinDisplay } from '../components/CoinDisplay';
-import { SIGHT_WORDS } from '../data/content';
+import { SIGHT_WORD_SETS, SightWordSet } from '../data/content';
 
 interface WordCatcherProps {
   currentCoins: number;
   onComplete: (coinsEarned: number, score: number, totalWords: number) => void;
   onBack: () => void;
+  wordSetId?: number; // Optional word set ID (defaults to 1)
 }
 
 type GameState = 'playing' | 'feedback' | 'results';
@@ -16,7 +17,14 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
   currentCoins,
   onComplete,
   onBack,
+  wordSetId = 1,
 }) => {
+  // Get the current word set
+  const [currentWordSet] = useState<SightWordSet>(() => {
+    const setId = wordSetId || 1;
+    return SIGHT_WORD_SETS.find(set => set.id === setId) || SIGHT_WORD_SETS[0];
+  });
+
   const [gameState, setGameState] = useState<GameState>('playing');
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
   const [options, setOptions] = useState<string[]>([]);
@@ -53,7 +61,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
 
   // Generate random options for current word
   const generateOptions = (correctWord: string) => {
-    const wrongWords = SIGHT_WORDS.filter(w => w !== correctWord);
+    const wrongWords = currentWordSet.words.filter(w => w !== correctWord);
     const randomWrong: string[] = [];
 
     while (randomWrong.length < 2 && wrongWords.length > 0) {
@@ -77,9 +85,9 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
 
   // Initialize options when component mounts or word changes
   useEffect(() => {
-    if (currentWordIndex < SIGHT_WORDS.length) {
-      setOptions(generateOptions(SIGHT_WORDS[currentWordIndex]));
-      speakWord(SIGHT_WORDS[currentWordIndex]);
+    if (currentWordIndex < currentWordSet.words.length) {
+      setOptions(generateOptions(currentWordSet.words[currentWordIndex]));
+      speakWord(currentWordSet.words[currentWordIndex]);
     }
   }, [currentWordIndex]);
 
@@ -93,7 +101,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
   }, []);
 
   const handleAnswer = (selectedWord: string) => {
-    const correct = selectedWord === SIGHT_WORDS[currentWordIndex];
+    const correct = selectedWord === currentWordSet.words[currentWordIndex];
     setLastAnswerCorrect(correct);
 
     if (correct) {
@@ -104,21 +112,22 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
 
     // Auto-advance after showing feedback
     setTimeout(() => {
-      if (currentWordIndex < SIGHT_WORDS.length - 1) {
+      if (currentWordIndex < currentWordSet.words.length - 1) {
         setCurrentWordIndex(currentWordIndex + 1);
         setGameState('playing');
       } else {
         // Game complete
-        const earned = 5 + correctCount + (correct ? 1 : 0); // 5 base + 1 per correct
+        const finalScore = correctCount + (correct ? 1 : 0);
+        const earned = finalScore * 3; // 3 coins per correct answer
         setCoinsEarned(earned);
         setGameState('results');
-        onComplete(earned, correctCount + (correct ? 1 : 0), SIGHT_WORDS.length);
+        onComplete(earned, finalScore, currentWordSet.words.length);
       }
     }, 1500);
   };
 
   const repeatWord = () => {
-    speakWord(SIGHT_WORDS[currentWordIndex]);
+    speakWord(currentWordSet.words[currentWordIndex]);
   };
 
   return (
@@ -148,8 +157,16 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
 
               <div className="text-center">
                 <h1 className="text-4xl font-bold text-primary mb-4">🎯 Word Catcher</h1>
+                <div className="mb-4">
+                  <span className="inline-block px-4 py-2 bg-primary-light rounded-full text-sm font-medium">
+                    {currentWordSet.name} - {currentWordSet.level}
+                  </span>
+                  <p className="text-xs text-text-secondary mt-1">
+                    {currentWordSet.description}
+                  </p>
+                </div>
                 <p className="text-2xl text-textSecondary">
-                  Word {currentWordIndex + 1} of {SIGHT_WORDS.length}
+                  Word {currentWordIndex + 1} of {currentWordSet.words.length}
                 </p>
               </div>
 
@@ -157,14 +174,14 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
               <div className="w-full bg-border rounded-full h-4">
                 <div
                   className="bg-primary h-4 rounded-full transition-all duration-300"
-                  style={{ width: `${((currentWordIndex + 1) / SIGHT_WORDS.length) * 100}%` }}
+                  style={{ width: `${((currentWordIndex + 1) / currentWordSet.words.length) * 100}%` }}
                 />
               </div>
 
               {/* Current Word Display */}
               <div className="bg-primary text-white rounded-lg p-12 text-center">
                 <p className="text-7xl font-bold mb-4">
-                  {SIGHT_WORDS[currentWordIndex]}
+                  {currentWordSet.words[currentWordIndex]}
                 </p>
                 <Button
                   variant="outline"
@@ -216,7 +233,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
                   <div className="text-9xl">❌</div>
                   <h2 className="text-5xl font-bold text-error">Try again next time!</h2>
                   <p className="text-3xl">
-                    The word was: <span className="font-bold text-primary">{SIGHT_WORDS[currentWordIndex]}</span>
+                    The word was: <span className="font-bold text-primary">{currentWordSet.words[currentWordIndex]}</span>
                   </p>
                 </>
               )}
@@ -235,7 +252,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
 
               <div className="space-y-4">
                 <p className="text-4xl font-semibold">
-                  You got <span className="text-success">{correctCount}/{SIGHT_WORDS.length}</span> correct!
+                  You got <span className="text-success">{correctCount}/{currentWordSet.words.length}</span> correct!
                 </p>
 
                 <div className="text-6xl">
