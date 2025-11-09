@@ -23,6 +23,33 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
   const [correctCount, setCorrectCount] = useState<number>(0);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean>(false);
   const [coinsEarned, setCoinsEarned] = useState<number>(0);
+  const [speechAvailable, setSpeechAvailable] = useState<boolean>(true);
+
+  // Helper function to speak a word with error handling
+  const speakWord = (word: string) => {
+    if (!('speechSynthesis' in window)) {
+      console.warn('Text-to-speech not available in this browser');
+      return;
+    }
+
+    try {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.rate = 0.8;
+      utterance.lang = 'en-US';
+
+      // Handle speech errors
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error('Failed to speak word:', error);
+    }
+  };
 
   // Generate random options for current word
   const generateOptions = (correctWord: string) => {
@@ -43,19 +70,27 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
     return allOptions.sort(() => Math.random() - 0.5);
   };
 
+  // Check speech availability on mount
+  useEffect(() => {
+    setSpeechAvailable('speechSynthesis' in window);
+  }, []);
+
   // Initialize options when component mounts or word changes
   useEffect(() => {
     if (currentWordIndex < SIGHT_WORDS.length) {
       setOptions(generateOptions(SIGHT_WORDS[currentWordIndex]));
-
-      // Optional: Speak the word using Web Speech API
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(SIGHT_WORDS[currentWordIndex]);
-        utterance.rate = 0.8; // Slower for kids
-        speechSynthesis.speak(utterance);
-      }
+      speakWord(SIGHT_WORDS[currentWordIndex]);
     }
   }, [currentWordIndex]);
+
+  // Cleanup speech on unmount
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   const handleAnswer = (selectedWord: string) => {
     const correct = selectedWord === SIGHT_WORDS[currentWordIndex];
@@ -83,11 +118,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
   };
 
   const repeatWord = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(SIGHT_WORDS[currentWordIndex]);
-      utterance.rate = 0.8;
-      speechSynthesis.speak(utterance);
-    }
+    speakWord(SIGHT_WORDS[currentWordIndex]);
   };
 
   return (
@@ -105,6 +136,16 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
         <div className="flex-1 flex items-center justify-center">
           <Card className="max-w-2xl w-full">
             <div className="space-y-8">
+              {/* Speech Not Available Warning */}
+              {!speechAvailable && (
+                <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    🔇 Text-to-speech is not available in your browser.
+                    You can still play, but words won't be spoken aloud.
+                  </p>
+                </div>
+              )}
+
               <div className="text-center">
                 <h1 className="text-4xl font-bold text-primary mb-4">🎯 Word Catcher</h1>
                 <p className="text-2xl text-textSecondary">

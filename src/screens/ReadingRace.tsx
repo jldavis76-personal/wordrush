@@ -25,6 +25,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [coinsEarned, setCoinsEarned] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<number>(Date.now());
 
   const startReading = () => {
     setStartTime(Date.now());
@@ -67,18 +68,23 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
 
   const getElapsedTime = () => {
     if (!startTime) return 0;
-    const now = endTime || Date.now();
+    const now = endTime || currentTime;
     return Math.floor((now - startTime) / 1000);
   };
 
+  // Timer effect with proper cleanup
   useEffect(() => {
-    let interval: number;
     if (startTime && !endTime) {
-      interval = setInterval(() => {
-        // Force re-render to update timer
+      const interval = window.setInterval(() => {
+        setCurrentTime(Date.now());
       }, 1000);
+
+      return () => {
+        window.clearInterval(interval);
+      };
     }
-    return () => clearInterval(interval);
+
+    return () => {};
   }, [startTime, endTime]);
 
   return (
