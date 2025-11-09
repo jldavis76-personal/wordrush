@@ -51,3 +51,13 @@ export interface ComprehensionQuestion {
   options: string[];
   correctIndex: number;
 }
+
+export interface ReadingPassage {
+  id: string;
+  title: string;
+  text: string;
+  wordCount: number;
+  category: 'fiction' | 'non-fiction';
+  difficulty: 'easy' | 'medium' | 'hard';
+  questions: ComprehensionQuestion[];
+}

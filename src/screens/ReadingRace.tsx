@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { CoinDisplay } from '../components/CoinDisplay';
-import { READING_PASSAGE, COMPREHENSION_QUESTIONS } from '../data/content';
+import { READING_PASSAGES } from '../data/content';
 
 interface ReadingRaceProps {
   currentCoins: number;
@@ -17,6 +17,12 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
   onComplete,
   onBack,
 }) => {
+  // Select random passage on component mount
+  const [currentPassage] = useState(() => {
+    const randomIndex = Math.floor(Math.random() * READING_PASSAGES.length);
+    return READING_PASSAGES[randomIndex];
+  });
+
   const [gameState, setGameState] = useState<GameState>('reading');
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
@@ -36,7 +42,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
       const end = Date.now();
       setEndTime(end);
       const seconds = (end - startTime) / 1000;
-      const calculatedWpm = Math.round((READING_PASSAGE.wordCount / seconds) * 60);
+      const calculatedWpm = Math.round((currentPassage.wordCount / seconds) * 60);
       setWpm(calculatedWpm);
       setGameState('questions');
     }
@@ -46,13 +52,13 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
     const newAnswers = [...answers, answerIndex];
     setAnswers(newAnswers);
 
-    if (currentQuestion < COMPREHENSION_QUESTIONS.length - 1) {
+    if (currentQuestion < currentPassage.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       // Calculate score
       let correctCount = 0;
       newAnswers.forEach((answer, idx) => {
-        if (answer === COMPREHENSION_QUESTIONS[idx].correctIndex) {
+        if (answer === currentPassage.questions[idx].correctIndex) {
           correctCount++;
         }
       });
@@ -62,7 +68,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
       const earned = 10 + (correctCount * 5);
       setCoinsEarned(earned);
       setGameState('results');
-      onComplete(earned, wpm, correctCount, COMPREHENSION_QUESTIONS.length);
+      onComplete(earned, wpm, correctCount, currentPassage.questions.length);
     }
   };
 
@@ -113,10 +119,10 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
 
               <div className="bg-background p-6 rounded-lg">
                 <h2 className="text-2xl font-bold text-center mb-4">
-                  {READING_PASSAGE.title}
+                  {currentPassage.title}
                 </h2>
                 <p className="text-lg leading-relaxed whitespace-pre-line">
-                  {READING_PASSAGE.text}
+                  {currentPassage.text}
                 </p>
               </div>
 
@@ -143,7 +149,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
             <div className="space-y-6">
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-primary mb-2">
-                  Question {currentQuestion + 1} of {COMPREHENSION_QUESTIONS.length}
+                  Question {currentQuestion + 1} of {currentPassage.questions.length}
                 </h2>
                 <p className="text-xl text-textSecondary">
                   You read at {wpm} words per minute! 🎉
@@ -152,11 +158,11 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
 
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold text-center">
-                  {COMPREHENSION_QUESTIONS[currentQuestion].question}
+                  {currentPassage.questions[currentQuestion].question}
                 </h3>
 
                 <div className="space-y-3">
-                  {COMPREHENSION_QUESTIONS[currentQuestion].options.map((option, idx) => (
+                  {currentPassage.questions[currentQuestion].options.map((option, idx) => (
                     <Button
                       key={idx}
                       variant="outline"
@@ -188,7 +194,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
                 </p>
 
                 <p className="text-3xl font-semibold">
-                  Score: <span className="text-success">{score}/{COMPREHENSION_QUESTIONS.length}</span>{' '}
+                  Score: <span className="text-success">{score}/{currentPassage.questions.length}</span>{' '}
                   {'⭐'.repeat(score)}
                 </p>
 
