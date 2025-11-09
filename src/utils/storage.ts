@@ -154,6 +154,16 @@ const ensureProfileFields = (profiles: any): Profiles => {
     })),
     unlockedItems: profile.unlockedItems || [],
     coins: profile.coins || 0,
+    currentWordSet: profile.currentWordSet || 1,
+    completedWordSets: profile.completedWordSets || [],
+    // New fields for badge system
+    unlockedBadges: (profile.unlockedBadges || []).map((badge: any) => ({
+      ...badge,
+      // Convert unlockedAt string back to Date object
+      unlockedAt: badge.unlockedAt ? new Date(badge.unlockedAt) : new Date(),
+    })),
+    lastActivityDate: profile.lastActivityDate ? new Date(profile.lastActivityDate) : undefined,
+    streakDays: profile.streakDays || 0,
   });
 
   return {
