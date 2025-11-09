@@ -46,6 +46,16 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
             <p className="text-xl text-textSecondary">
               What would you like to do today?
             </p>
+
+            {/* Badge Summary */}
+            {profile.unlockedBadges.length > 0 && (
+              <div className="flex items-center justify-center gap-2 p-3 bg-primary-light rounded-lg">
+                <span className="text-2xl">🏆</span>
+                <span className="text-lg font-medium">
+                  {profile.unlockedBadges.length} badge{profile.unlockedBadges.length !== 1 ? 's' : ''} earned
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Activity Cards */}
