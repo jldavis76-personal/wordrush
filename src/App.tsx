@@ -7,6 +7,7 @@ import { WordCatcher } from './screens/WordCatcher';
 import { AvatarShop } from './screens/AvatarShop';
 import { ProgressDashboard } from './screens/ProgressDashboard';
 import { PassageSelector } from './components/PassageSelector';
+import { BadgeUnlockNotification } from './components/BadgeUnlockNotification';
 import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
 import { READING_PASSAGES } from './data/content';
 import { checkForNewBadges } from './utils/badgeChecker';
@@ -67,14 +68,6 @@ function App() {
   const [newlyUnlockedBadges, setNewlyUnlockedBadges] = useState<BadgeId[]>([]);
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
-
-  // TODO: Task 3 - Add BadgeUnlockNotification component to display newlyUnlockedBadges
-  // For now, just log them to console
-  useEffect(() => {
-    if (newlyUnlockedBadges.length > 0) {
-      console.log('[Badges] Newly unlocked badges:', newlyUnlockedBadges);
-    }
-  }, [newlyUnlockedBadges]);
 
   // Auto-save to localStorage whenever profiles change
   useEffect(() => {
@@ -349,6 +342,14 @@ function App() {
         <ProgressDashboard
           profile={currentProfile}
           onBack={handleBackToMenu}
+        />
+      )}
+
+      {/* Badge Unlock Notification */}
+      {newlyUnlockedBadges.length > 0 && (
+        <BadgeUnlockNotification
+          badgeIds={newlyUnlockedBadges}
+          onClose={() => setNewlyUnlockedBadges([])}
         />
       )}
     </div>

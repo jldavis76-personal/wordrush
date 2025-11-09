@@ -4,6 +4,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/Avatar';
 import { CoinDisplay } from '../components/CoinDisplay';
+import { BadgeCollection } from '../components/BadgeCollection';
 
 interface ProgressDashboardProps {
   profile: Profile;
@@ -245,6 +246,11 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({
               ))}
             </div>
           )}
+        </Card>
+
+        {/* Badge Collection */}
+        <Card>
+          <BadgeCollection profile={profile} />
         </Card>
 
         {/* Back Button */}
