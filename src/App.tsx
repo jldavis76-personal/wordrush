@@ -5,11 +5,12 @@ import { ActivitySelection } from './screens/ActivitySelection';
 import { ReadingRace } from './screens/ReadingRace';
 import { WordCatcher } from './screens/WordCatcher';
 import { AvatarShop } from './screens/AvatarShop';
+import { ProgressDashboard } from './screens/ProgressDashboard';
 import { PassageSelector } from './components/PassageSelector';
 import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
 import { READING_PASSAGES } from './data/content';
 
-type Screen = 'profile-selection' | 'activity-selection' | 'passage-selection' | 'reading-race' | 'word-catcher' | 'shop';
+type Screen = 'profile-selection' | 'activity-selection' | 'passage-selection' | 'reading-race' | 'word-catcher' | 'shop' | 'progress-dashboard';
 
 /**
  * Load profiles from localStorage or use defaults
@@ -97,6 +98,10 @@ function App() {
 
   const handleGoToShop = () => {
     setCurrentScreen('shop');
+  };
+
+  const handleShowProgress = () => {
+    setCurrentScreen('progress-dashboard');
   };
 
   const handleBackToMenu = () => {
@@ -216,6 +221,7 @@ function App() {
           profile={currentProfile}
           onStartActivity={handleStartActivity}
           onGoToShop={handleGoToShop}
+          onShowProgress={handleShowProgress}
           onChangeProfile={handleChangeProfile}
         />
       )}
@@ -252,6 +258,13 @@ function App() {
         <AvatarShop
           profile={currentProfile}
           onUnlockItem={handleUnlockItem}
+          onBack={handleBackToMenu}
+        />
+      )}
+
+      {currentScreen === 'progress-dashboard' && currentProfile && (
+        <ProgressDashboard
+          profile={currentProfile}
           onBack={handleBackToMenu}
         />
       )}
