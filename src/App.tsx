@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Profiles, ProfileId, UnlockableItem, ReadingActivityResult, WordActivityResult, ReadingPassage } from './types';
+import { Profiles, ProfileId, UnlockableItem, ReadingActivityResult, WordActivityResult, ReadingPassage, BadgeId } from './types';
 import { ProfileSelection } from './screens/ProfileSelection';
 import { ActivitySelection } from './screens/ActivitySelection';
 import { ReadingRace } from './screens/ReadingRace';
@@ -9,6 +9,8 @@ import { ProgressDashboard } from './screens/ProgressDashboard';
 import { PassageSelector } from './components/PassageSelector';
 import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
 import { READING_PASSAGES } from './data/content';
+import { checkForNewBadges } from './utils/badgeChecker';
+import { updateStreak } from './utils/streakTracker';
 
 type Screen = 'profile-selection' | 'activity-selection' | 'passage-selection' | 'reading-race' | 'word-catcher' | 'shop' | 'progress-dashboard';
 
@@ -36,6 +38,8 @@ const getInitialProfiles = (): Profiles => {
       activityHistory: [],
       currentWordSet: 1,
       completedWordSets: [],
+      unlockedBadges: [],
+      streakDays: 0,
     },
     son: {
       id: 'son',
@@ -46,6 +50,8 @@ const getInitialProfiles = (): Profiles => {
       activityHistory: [],
       currentWordSet: 1,
       completedWordSets: [],
+      unlockedBadges: [],
+      streakDays: 0,
     },
   };
 };
@@ -57,8 +63,18 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('profile-selection');
   const [selectedWordSet, setSelectedWordSet] = useState<number>(1);
   const [selectedPassage, setSelectedPassage] = useState<ReadingPassage | null>(null);
+  // Badge unlock notifications - will be used in Task 3 for UI notifications
+  const [newlyUnlockedBadges, setNewlyUnlockedBadges] = useState<BadgeId[]>([]);
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
+
+  // TODO: Task 3 - Add BadgeUnlockNotification component to display newlyUnlockedBadges
+  // For now, just log them to console
+  useEffect(() => {
+    if (newlyUnlockedBadges.length > 0) {
+      console.log('[Badges] Newly unlocked badges:', newlyUnlockedBadges);
+    }
+  }, [newlyUnlockedBadges]);
 
   // Auto-save to localStorage whenever profiles change
   useEffect(() => {
@@ -141,14 +157,38 @@ function App() {
       passageId,
     };
 
-    setProfiles((prev) => ({
-      ...prev,
-      [currentProfileId]: {
+    setProfiles((prev) => {
+      let updatedProfile = {
         ...prev[currentProfileId],
         coins: prev[currentProfileId].coins + coinsEarned,
         activityHistory: [...prev[currentProfileId].activityHistory, result],
-      },
-    }));
+      };
+
+      // Update streak
+      updatedProfile = updateStreak(updatedProfile);
+
+      // Check for new badges
+      const newBadges = checkForNewBadges(updatedProfile);
+
+      if (newBadges.length > 0) {
+        // Add newly unlocked badges
+        updatedProfile.unlockedBadges = [
+          ...updatedProfile.unlockedBadges,
+          ...newBadges.map(badgeId => ({
+            badgeId,
+            unlockedAt: new Date(),
+          })),
+        ];
+
+        // Show notification
+        setNewlyUnlockedBadges(newBadges);
+      }
+
+      return {
+        ...prev,
+        [currentProfileId]: updatedProfile,
+      };
+    });
   };
 
   const handleWordComplete = (coinsEarned: number, score: number, totalWords: number) => {
@@ -181,15 +221,37 @@ function App() {
         ? currentSet + 1
         : currentSet;
 
+      let updatedProfile = {
+        ...profile,
+        coins: profile.coins + coinsEarned,
+        activityHistory: [...profile.activityHistory, result],
+        currentWordSet: nextSet,
+        completedWordSets: newCompleted,
+      };
+
+      // Update streak
+      updatedProfile = updateStreak(updatedProfile);
+
+      // Check for new badges
+      const newBadges = checkForNewBadges(updatedProfile);
+
+      if (newBadges.length > 0) {
+        // Add newly unlocked badges
+        updatedProfile.unlockedBadges = [
+          ...updatedProfile.unlockedBadges,
+          ...newBadges.map(badgeId => ({
+            badgeId,
+            unlockedAt: new Date(),
+          })),
+        ];
+
+        // Show notification
+        setNewlyUnlockedBadges(newBadges);
+      }
+
       return {
         ...prev,
-        [currentProfileId]: {
-          ...profile,
-          coins: profile.coins + coinsEarned,
-          activityHistory: [...profile.activityHistory, result],
-          currentWordSet: nextSet,
-          completedWordSets: newCompleted,
-        },
+        [currentProfileId]: updatedProfile,
       };
     });
   };
@@ -197,14 +259,35 @@ function App() {
   const handleUnlockItem = (itemId: UnlockableItem, cost: number) => {
     if (!currentProfileId) return;
 
-    setProfiles((prev) => ({
-      ...prev,
-      [currentProfileId]: {
+    setProfiles((prev) => {
+      let updatedProfile = {
         ...prev[currentProfileId],
         coins: prev[currentProfileId].coins - cost,
         unlockedItems: [...prev[currentProfileId].unlockedItems, itemId],
-      },
-    }));
+      };
+
+      // Check for new badges (fashion icon badge)
+      const newBadges = checkForNewBadges(updatedProfile);
+
+      if (newBadges.length > 0) {
+        // Add newly unlocked badges
+        updatedProfile.unlockedBadges = [
+          ...updatedProfile.unlockedBadges,
+          ...newBadges.map(badgeId => ({
+            badgeId,
+            unlockedAt: new Date(),
+          })),
+        ];
+
+        // Show notification
+        setNewlyUnlockedBadges(newBadges);
+      }
+
+      return {
+        ...prev,
+        [currentProfileId]: updatedProfile,
+      };
+    });
   };
 
   return (
