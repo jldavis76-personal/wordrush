@@ -10,6 +10,7 @@ interface ActivitySelectionProps {
   profile: Profile;
   onStartActivity: (activity: 'reading' | 'words', wordSetId?: number) => void;
   onGoToShop: () => void;
+  onShowProgress: () => void;
   onChangeProfile: () => void;
 }
 
@@ -17,6 +18,7 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
   profile,
   onStartActivity,
   onGoToShop,
+  onShowProgress,
   onChangeProfile,
 }) => {
   // State for word set selection (default to profile's current word set or 1)
@@ -131,6 +133,17 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
                 <h2 className="text-2xl font-bold text-secondary">Avatar Shop</h2>
                 <p className="text-lg text-textSecondary">
                   Unlock cool items for your avatar
+                </p>
+              </div>
+            </Card>
+
+            {/* Progress Dashboard Button */}
+            <Card hoverable onClick={onShowProgress}>
+              <div className="text-center space-y-4">
+                <div className="text-6xl">📊</div>
+                <h2 className="text-2xl font-bold text-primary">View Progress</h2>
+                <p className="text-lg text-textSecondary">
+                  See your stats and achievements
                 </p>
               </div>
             </Card>
