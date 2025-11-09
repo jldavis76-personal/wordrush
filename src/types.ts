@@ -15,6 +15,7 @@ export interface ReadingActivityResult extends BaseActivityResult {
   wpm: number;
   score: number;
   totalQuestions: number;
+  passageId: string; // Track which passage was completed
 }
 
 export interface WordActivityResult extends BaseActivityResult {
