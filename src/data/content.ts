@@ -18,7 +18,7 @@ When the hare woke up, he raced to the finish line as fast as he could. But it w
 The hare learned an important lesson that day: Slow and steady wins the race.`,
     wordCount: 150,
     category: 'fiction',
-    difficulty: 'medium',
+    difficulty: 'easy',
     questions: [
       {
         question: "Who challenged the Tortoise to a race?",
@@ -46,7 +46,7 @@ Maya carried the puppy to the playground. A young boy was there with his mom, ca
 "Thank you so much for finding Biscuit!" said the boy's mom. The boy gave Maya a big hug. Maya felt happy that she could help reunite Biscuit with his family.`,
     wordCount: 165,
     category: 'fiction',
-    difficulty: 'medium',
+    difficulty: 'easy',
     questions: [
       {
         question: "Where did Maya find the puppy?",
@@ -178,7 +178,7 @@ As summer arrived, their garden became beautiful and full of food. The tomatoes 
 The friends picked vegetables and fruits from their garden and shared them with their families. They learned that when friends work together, they can create something much more wonderful than they could make alone. Their friendship garden was a success!`,
     wordCount: 190,
     category: 'fiction',
-    difficulty: 'medium',
+    difficulty: 'hard',
     questions: [
       {
         question: "How many friends worked on the garden?",
@@ -193,6 +193,195 @@ The friends picked vegetables and fruits from their garden and shared them with 
       {
         question: "What lesson did the friends learn?",
         options: ["Gardens are hard to grow", "Working together creates something wonderful", "Sunflowers grow very tall"],
+        correctIndex: 1,
+      },
+    ]
+  },
+  {
+    id: 'helpful-ant',
+    title: "The Helpful Ant",
+    text: `A tiny ant was walking by a pond when she heard a cry for help. A dove had fallen into the water and could not fly away! The ant saw a leaf nearby. She pushed the leaf into the water. The dove climbed onto the leaf and floated to safety. "Thank you, little ant!" said the dove.
+
+A few days later, a hunter came to the forest. He wanted to catch the dove. The ant saw the hunter and knew she had to help her friend. She climbed up the hunter's leg and bit him. "Ouch!" yelled the hunter. The dove heard the noise and flew away to safety. The ant and dove smiled at each other. True friends help each other!`,
+    wordCount: 135,
+    category: 'fiction',
+    difficulty: 'easy',
+    questions: [
+      {
+        question: "Who fell into the water?",
+        options: ["The ant", "The dove", "The hunter"],
+        correctIndex: 1,
+      },
+      {
+        question: "How did the ant help the dove escape from the hunter?",
+        options: ["She pushed him", "She bit him", "She yelled at him"],
+        correctIndex: 1,
+      },
+      {
+        question: "What lesson does this story teach?",
+        options: ["Friends help each other", "Birds can't swim", "Ants are strong"],
+        correctIndex: 0,
+      },
+    ]
+  },
+  {
+    id: 'butterflies',
+    title: "Butterflies",
+    text: `Butterflies are beautiful insects with colorful wings. But they don't start out that way! A butterfly's life has four stages.
+
+First, a mother butterfly lays tiny eggs on a leaf. After a few days, a caterpillar hatches from each egg. The caterpillar is very hungry! It eats leaves all day long and grows bigger and bigger.
+
+Next, the caterpillar makes a hard shell around itself called a chrysalis. Inside the chrysalis, something amazing happens. The caterpillar changes into a butterfly! This takes about two weeks.
+
+Finally, the chrysalis opens and a butterfly comes out. Its wings are wet at first, but they dry in the sun. Soon the butterfly can fly away to find flowers and start the cycle again!`,
+    wordCount: 140,
+    category: 'non-fiction',
+    difficulty: 'easy',
+    questions: [
+      {
+        question: "What comes out of a butterfly egg?",
+        options: ["A butterfly", "A caterpillar", "A chrysalis"],
+        correctIndex: 1,
+      },
+      {
+        question: "What does a caterpillar eat?",
+        options: ["Flowers", "Other bugs", "Leaves"],
+        correctIndex: 2,
+      },
+      {
+        question: "How long does it take to change inside the chrysalis?",
+        options: ["Two days", "Two weeks", "Two months"],
+        correctIndex: 1,
+      },
+    ]
+  },
+  {
+    id: 'curious-cloud',
+    title: "The Curious Cloud",
+    text: `Carlo was a small white cloud who lived in the sky. Every day, he watched the other clouds drift across the sky, but he wanted to see what was below. One morning, Carlo decided to float down closer to Earth.
+
+First, he floated over a sparkling ocean. He saw dolphins jumping and splashing in the waves. "How wonderful!" thought Carlo. He drifted lower and crossed over a green forest. Birds were singing in the tall trees, and a deer was drinking from a stream.
+
+Next, Carlo floated over a busy city. He saw children playing in parks, cars driving on streets, and people walking with colorful umbrellas. Carlo realized the world was full of amazing things!
+
+As the sun began to set, Carlo floated back up to join his cloud friends. "Where have you been?" they asked. Carlo smiled and said, "I've been exploring! You should all come with me tomorrow!" The clouds agreed, excited to see the world below.`,
+    wordCount: 175,
+    category: 'fiction',
+    difficulty: 'medium',
+    questions: [
+      {
+        question: "What did Carlo see in the ocean?",
+        options: ["Fish swimming", "Dolphins jumping", "Boats sailing"],
+        correctIndex: 1,
+      },
+      {
+        question: "Why did Carlo float down to Earth?",
+        options: ["He was curious about what was below", "He was lost", "The wind pushed him"],
+        correctIndex: 0,
+      },
+      {
+        question: "How do you think Carlo felt about his adventure?",
+        options: ["Scared and worried", "Excited and happy", "Bored and tired"],
+        correctIndex: 1,
+      },
+    ]
+  },
+  {
+    id: 'how-rainbows-form',
+    title: "How Rainbows Form",
+    text: `Have you ever seen a rainbow after a rainstorm? Rainbows are one of nature's most beautiful sights! They happen when sunlight and water work together.
+
+Sunlight looks white, but it's actually made of many colors mixed together. These colors are red, orange, yellow, green, blue, indigo, and violet. When sunlight shines through raindrops in the air, something magical happens.
+
+The water droplets act like tiny prisms. They bend the sunlight and split it into all its different colors. Each color bends a slightly different amount, which is why we see them separated in a rainbow's arc.
+
+You can only see a rainbow when the sun is behind you and rain is in front of you. That's why rainbows often appear when a storm is ending and the sun comes back out. Next time it rains, look for a rainbow! Try to spot all seven colors in the sky.`,
+    wordCount: 168,
+    category: 'non-fiction',
+    difficulty: 'medium',
+    questions: [
+      {
+        question: "How many colors are in a rainbow?",
+        options: ["Five", "Seven", "Ten"],
+        correctIndex: 1,
+      },
+      {
+        question: "What splits sunlight into different colors?",
+        options: ["Clouds", "Water droplets", "The moon"],
+        correctIndex: 1,
+      },
+      {
+        question: "When can you see a rainbow?",
+        options: ["During a thunderstorm", "When the sun is behind you and rain is ahead", "Only at night"],
+        correctIndex: 1,
+      },
+    ]
+  },
+  {
+    id: 'brave-little-mouse',
+    title: "The Brave Little Mouse",
+    text: `Mia was the smallest mouse in her family, but she had the biggest heart. One day, her little brother Max got stuck in a hole in the garden wall. He was too scared to move!
+
+"Help!" squeaked Max. Mia ran to find help, but all the bigger mice were too large to fit through the hole. She realized she would have to save Max herself, even though she was frightened.
+
+Mia took a deep breath and squeezed through the narrow opening. The hole was dark and scary, but she could hear Max crying nearby. "I'm coming!" she called out bravely.
+
+Following Max's voice, Mia found him stuck between two stones. She pushed and pushed until the stones moved just enough. "You can do it!" she encouraged. Together, they squeezed through and made it back home.
+
+"You saved me!" said Max, hugging his sister. Their mother smiled proudly. "Mia, you were very brave today. Being small doesn't mean you can't do big things!" From that day on, Mia knew that courage comes in all sizes.`,
+    wordCount: 182,
+    category: 'fiction',
+    difficulty: 'medium',
+    questions: [
+      {
+        question: "Why couldn't the bigger mice help Max?",
+        options: ["They were scared", "They were too large to fit through the hole", "They didn't care"],
+        correctIndex: 1,
+      },
+      {
+        question: "What did Mia have to do to save Max?",
+        options: ["Call for adult help", "Push stones to free him", "Dig a new tunnel"],
+        correctIndex: 1,
+      },
+      {
+        question: "What did Mia learn from this experience?",
+        options: ["Small creatures can be brave and helpful", "Holes are dangerous", "Brothers are annoying"],
+        correctIndex: 0,
+      },
+    ]
+  },
+  {
+    id: 'amazing-octopus',
+    title: "The Amazing Octopus",
+    text: `The octopus is one of the ocean's most fascinating creatures. This intelligent animal has eight long arms covered with suction cups. Each arm can move independently, which means the octopus can do eight different things at once!
+
+But that's not all that makes octopuses special. They have three hearts! Two hearts pump blood to their gills to get oxygen, and the third heart pumps blood to the rest of their body. Octopuses also have blue blood instead of red because it contains copper instead of iron.
+
+Perhaps the most amazing ability of an octopus is camouflage. They can change the color and texture of their skin in less than a second! This helps them hide from predators and sneak up on prey. Special cells in their skin called chromatophores expand and contract to create different colors and patterns.
+
+When threatened, an octopus has another trick. It can squirt dark ink into the water, creating a smoky cloud. This confuses predators and gives the octopus time to escape. Some octopuses can even squeeze through tiny spaces because they have no bones! Scientists continue to study these remarkable animals to understand their incredible abilities.`,
+    wordCount: 205,
+    category: 'non-fiction',
+    difficulty: 'hard',
+    questions: [
+      {
+        question: "How many hearts does an octopus have?",
+        options: ["One", "Two", "Three"],
+        correctIndex: 2,
+      },
+      {
+        question: "What are chromatophores?",
+        options: ["The octopus's arms", "Special cells that change color", "The octopus's three hearts"],
+        correctIndex: 1,
+      },
+      {
+        question: "Which of these is NOT mentioned as an octopus ability?",
+        options: ["Changing color", "Squirting ink", "Flying"],
+        correctIndex: 2,
+      },
+      {
+        question: "Why can octopuses squeeze through tiny spaces?",
+        options: ["They are very small", "They have no bones", "They are very thin"],
         correctIndex: 1,
       },
     ]
