@@ -21,8 +21,8 @@ The hare learned an important lesson that day: Slow and steady wins the race.`,
     difficulty: 'easy',
     questions: [
       {
-        question: "Who challenged the Tortoise to a race?",
-        options: ["The Tortoise", "The Hare", "The Fox"],
+        question: "Who did the Tortoise challenge to a race?",
+        options: ["The Fox", "The Hare", "Another Tortoise"],
         correctIndex: 1,
       },
       {
