@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { CoinDisplay } from '../components/CoinDisplay';
-import { READING_PASSAGES } from '../data/content';
+import { ReadingPassage } from '../types';
 
 interface ReadingRaceProps {
   currentCoins: number;
-  onComplete: (coinsEarned: number, wpm: number, score: number, totalQuestions: number) => void;
+  onComplete: (coinsEarned: number, wpm: number, score: number, totalQuestions: number, passageId: string) => void;
   onBack: () => void;
+  passage: ReadingPassage; // Accept passage instead of random selection
 }
 
 type GameState = 'reading' | 'questions' | 'results';
@@ -16,12 +17,10 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
   currentCoins,
   onComplete,
   onBack,
+  passage,
 }) => {
-  // Select random passage on component mount
-  const [currentPassage] = useState(() => {
-    const randomIndex = Math.floor(Math.random() * READING_PASSAGES.length);
-    return READING_PASSAGES[randomIndex];
-  });
+  // Use the passage prop instead of random selection
+  const currentPassage = passage;
 
   const [gameState, setGameState] = useState<GameState>('reading');
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -68,7 +67,7 @@ export const ReadingRace: React.FC<ReadingRaceProps> = ({
       const earned = 10 + (correctCount * 5);
       setCoinsEarned(earned);
       setGameState('results');
-      onComplete(earned, wpm, correctCount, currentPassage.questions.length);
+      onComplete(earned, wpm, correctCount, currentPassage.questions.length, currentPassage.id);
     }
   };
 

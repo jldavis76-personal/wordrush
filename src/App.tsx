@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Profiles, ProfileId, UnlockableItem, ReadingActivityResult, WordActivityResult } from './types';
+import { Profiles, ProfileId, UnlockableItem, ReadingActivityResult, WordActivityResult, ReadingPassage } from './types';
 import { ProfileSelection } from './screens/ProfileSelection';
 import { ActivitySelection } from './screens/ActivitySelection';
 import { ReadingRace } from './screens/ReadingRace';
 import { WordCatcher } from './screens/WordCatcher';
 import { AvatarShop } from './screens/AvatarShop';
+import { PassageSelector } from './components/PassageSelector';
 import { saveProfiles, loadProfiles, isStorageAvailable } from './utils/storage';
+import { READING_PASSAGES } from './data/content';
 
-type Screen = 'profile-selection' | 'activity-selection' | 'reading-race' | 'word-catcher' | 'shop';
+type Screen = 'profile-selection' | 'activity-selection' | 'passage-selection' | 'reading-race' | 'word-catcher' | 'shop';
 
 /**
  * Load profiles from localStorage or use defaults
@@ -53,6 +55,7 @@ function App() {
   const [currentProfileId, setCurrentProfileId] = useState<ProfileId | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('profile-selection');
   const [selectedWordSet, setSelectedWordSet] = useState<number>(1);
+  const [selectedPassage, setSelectedPassage] = useState<ReadingPassage | null>(null);
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
 
@@ -83,7 +86,7 @@ function App() {
 
   const handleStartActivity = (activity: 'reading' | 'words', wordSetId?: number) => {
     if (activity === 'reading') {
-      setCurrentScreen('reading-race');
+      setCurrentScreen('passage-selection');
     } else {
       // Set the selected word set if provided, otherwise use profile's current word set or default to 1
       const wordSet = wordSetId || currentProfile?.currentWordSet || 1;
@@ -100,7 +103,27 @@ function App() {
     setCurrentScreen('activity-selection');
   };
 
-  const handleReadingComplete = (coinsEarned: number, wpm: number, score: number, totalQuestions: number) => {
+  const handlePassageSelect = (passage: ReadingPassage) => {
+    setSelectedPassage(passage);
+    setCurrentScreen('reading-race');
+  };
+
+  const handleRandomPassage = () => {
+    const randomIndex = Math.floor(Math.random() * READING_PASSAGES.length);
+    setSelectedPassage(READING_PASSAGES[randomIndex]);
+    setCurrentScreen('reading-race');
+  };
+
+  const getCompletedPassageIds = (): string[] => {
+    if (!currentProfile) return [];
+
+    return currentProfile.activityHistory
+      .filter(activity => activity.activityType === 'reading')
+      .map(activity => (activity as ReadingActivityResult).passageId)
+      .filter((id, index, self) => id && self.indexOf(id) === index); // unique IDs
+  };
+
+  const handleReadingComplete = (coinsEarned: number, wpm: number, score: number, totalQuestions: number, passageId: string) => {
     if (!currentProfileId) return;
 
     const result: ReadingActivityResult = {
@@ -110,6 +133,7 @@ function App() {
       wpm,
       score,
       totalQuestions,
+      passageId,
     };
 
     setProfiles((prev) => ({
@@ -196,11 +220,22 @@ function App() {
         />
       )}
 
-      {currentScreen === 'reading-race' && currentProfile && (
+      {currentScreen === 'passage-selection' && (
+        <PassageSelector
+          passages={READING_PASSAGES}
+          completedPassageIds={getCompletedPassageIds()}
+          onSelect={handlePassageSelect}
+          onRandom={handleRandomPassage}
+          onBack={handleBackToMenu}
+        />
+      )}
+
+      {currentScreen === 'reading-race' && currentProfile && selectedPassage && (
         <ReadingRace
           currentCoins={currentProfile.coins}
           onComplete={handleReadingComplete}
           onBack={handleBackToMenu}
+          passage={selectedPassage}
         />
       )}
 
