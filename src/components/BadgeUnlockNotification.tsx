@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BadgeId } from '../types';
 import { BADGES } from '../data/badges';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
+import { soundManager } from '../utils/soundManager';
 
 interface BadgeUnlockNotificationProps {
   badgeIds: BadgeId[];
@@ -14,6 +15,11 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
   onClose,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Play badge unlock sound when component mounts
+  useEffect(() => {
+    soundManager.play('badge');
+  }, []);
 
   if (badgeIds.length === 0) return null;
 

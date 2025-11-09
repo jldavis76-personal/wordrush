@@ -3,6 +3,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { CoinDisplay } from '../components/CoinDisplay';
 import { SIGHT_WORD_SETS, SightWordSet } from '../data/content';
+import { soundManager } from '../utils/soundManager';
 
 interface WordCatcherProps {
   currentCoins: number;
@@ -78,9 +79,10 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
     return allOptions.sort(() => Math.random() - 0.5);
   };
 
-  // Check speech availability on mount
+  // Check speech availability on mount and play start sound
   useEffect(() => {
     setSpeechAvailable('speechSynthesis' in window);
+    soundManager.play('start');
   }, []);
 
   // Initialize options when component mounts or word changes
@@ -104,6 +106,9 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
     const correct = selectedWord === currentWordSet.words[currentWordIndex];
     setLastAnswerCorrect(correct);
 
+    // Play sound based on correctness
+    soundManager.play(correct ? 'correct' : 'wrong');
+
     if (correct) {
       setCorrectCount(correctCount + 1);
     }
@@ -120,6 +125,10 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
         const finalScore = correctCount + (correct ? 1 : 0);
         const earned = finalScore * 3; // 3 coins per correct answer
         setCoinsEarned(earned);
+
+        // Play coin sound on completion
+        soundManager.play('coin');
+
         setGameState('results');
         onComplete(earned, finalScore, currentWordSet.words.length);
       }
