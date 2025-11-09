@@ -56,6 +56,16 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
                 </span>
               </div>
             )}
+
+            {/* Streak Indicator */}
+            {profile.streakDays > 0 && (
+              <div className="flex items-center justify-center gap-2 p-3 bg-primary-light rounded-lg">
+                <span className="text-2xl">🔥</span>
+                <span className="text-lg font-bold">
+                  {profile.streakDays} Day Streak!
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Activity Cards */}

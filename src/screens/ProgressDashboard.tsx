@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/Avatar';
 import { CoinDisplay } from '../components/CoinDisplay';
 import { BadgeCollection } from '../components/BadgeCollection';
+import { getStreakMessage, isStreakAtRisk } from '../utils/streakTracker';
 
 interface ProgressDashboardProps {
   profile: Profile;
@@ -133,6 +134,30 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({
               <div className="text-3xl font-bold text-purple-600">{stats.totalWordActivities}</div>
               <div className="text-sm text-text-secondary mt-1">Word Games</div>
             </div>
+          </div>
+        </Card>
+
+        {/* Daily Streak */}
+        <Card>
+          <h2 className="text-2xl font-bold mb-4">🔥 Daily Streak</h2>
+          <div className="text-center space-y-4">
+            <div className="text-6xl font-bold text-primary">
+              {profile.streakDays}
+            </div>
+            <div className="text-xl font-medium">
+              {profile.streakDays === 1 ? 'Day' : 'Days'}
+            </div>
+            <p className="text-lg text-text-secondary">
+              {getStreakMessage(profile.streakDays)}
+            </p>
+
+            {isStreakAtRisk(profile) && (
+              <div className="p-3 bg-yellow-100 border border-yellow-400 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ Practice today to keep your streak alive!
+                </p>
+              </div>
+            )}
           </div>
         </Card>
 
