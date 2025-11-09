@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Profile } from '../types';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/Avatar';
 import { CoinDisplay } from '../components/CoinDisplay';
+import { SIGHT_WORD_SETS } from '../data/content';
 
 interface ActivitySelectionProps {
   profile: Profile;
-  onStartActivity: (activity: 'reading' | 'words') => void;
+  onStartActivity: (activity: 'reading' | 'words', wordSetId?: number) => void;
   onGoToShop: () => void;
   onChangeProfile: () => void;
 }
@@ -18,6 +19,9 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
   onGoToShop,
   onChangeProfile,
 }) => {
+  // State for word set selection (default to profile's current word set or 1)
+  const [selectedWordSet, setSelectedWordSet] = useState(profile.currentWordSet || 1);
+
   return (
     <div className="min-h-screen flex flex-col p-4 md:p-8">
       {/* Header */}
@@ -72,11 +76,47 @@ export const ActivitySelection: React.FC<ActivitySelectionProps> = ({
                   <p className="text-lg text-textSecondary">
                     Match sight words and earn coins
                   </p>
+
+                  {/* Word Set Selector */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-text-secondary mb-2">
+                      Choose Word Set:
+                    </label>
+                    <div className="flex gap-2 flex-wrap justify-center">
+                      {SIGHT_WORD_SETS.map(set => {
+                        const isCompleted = profile.completedWordSets?.includes(set.id);
+                        const isCurrent = set.id === (profile.currentWordSet || 1);
+
+                        return (
+                          <button
+                            key={set.id}
+                            onClick={() => setSelectedWordSet(set.id)}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors relative ${
+                              selectedWordSet === set.id
+                                ? 'bg-primary text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                          >
+                            Set {set.id}
+                            {isCompleted && <span className="ml-1">✅</span>}
+                            {isCurrent && !isCompleted && <span className="ml-1">📍</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-text-secondary mt-2">
+                      {SIGHT_WORD_SETS.find(s => s.id === selectedWordSet)?.description}
+                    </p>
+                    <p className="text-xs text-text-secondary mt-1">
+                      {SIGHT_WORD_SETS.find(s => s.id === selectedWordSet)?.level} • {SIGHT_WORD_SETS.find(s => s.id === selectedWordSet)?.words.length} words
+                    </p>
+                  </div>
+
                   <Button
                     variant="primary"
                     size="lg"
                     className="w-full"
-                    onClick={() => onStartActivity('words')}
+                    onClick={() => onStartActivity('words', selectedWordSet)}
                   >
                     🎮 Play Game!
                   </Button>

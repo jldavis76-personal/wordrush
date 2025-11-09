@@ -389,7 +389,56 @@ When threatened, an octopus has another trick. It can squirt dark ink into the w
 ];
 
 // Sight words for son's Word Catcher game
-export const SIGHT_WORDS = ['I', 'a', 'am', 'the', 'see', 'can', 'go', 'we', 'my', 'you'];
+// Organized into progressive sets based on Dolch Sight Words
+
+export interface SightWordSet {
+  id: number;
+  name: string;
+  level: string;
+  words: string[];
+  description: string;
+}
+
+export const SIGHT_WORD_SETS: SightWordSet[] = [
+  {
+    id: 1,
+    name: "Word Set 1",
+    level: "Pre-K",
+    words: ['a', 'I', 'the', 'see', 'can', 'go', 'we', 'my', 'you', 'and'],
+    description: "Starting words - the very basics!"
+  },
+  {
+    id: 2,
+    name: "Word Set 2",
+    level: "Kindergarten Easy",
+    words: ['in', 'is', 'it', 'at', 'he', 'she', 'to', 'me', 'be', 'for', 'not', 'are'],
+    description: "Building your word power!"
+  },
+  {
+    id: 3,
+    name: "Word Set 3",
+    level: "Kindergarten Advanced",
+    words: ['up', 'down', 'come', 'here', 'look', 'this', 'that', 'with', 'have', 'they'],
+    description: "You're getting good at this!"
+  },
+  {
+    id: 4,
+    name: "Word Set 4",
+    level: "Grade 1 Easy",
+    words: ['like', 'play', 'good', 'new', 'want', 'help', 'find', 'run', 'said', 'away'],
+    description: "Advanced reader mode!"
+  },
+  {
+    id: 5,
+    name: "Word Set 5",
+    level: "Grade 1 Advanced",
+    words: ['came', 'make', 'day', 'get', 'take', 'give', 'going', 'where', 'when', 'what'],
+    description: "Master level - you're amazing!"
+  }
+];
+
+// For backward compatibility, keep SIGHT_WORDS pointing to Set 1
+export const SIGHT_WORDS = SIGHT_WORD_SETS[0].words;
 
 // Avatar shop items
 export const SHOP_ITEMS: ShopItem[] = [

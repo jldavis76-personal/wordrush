@@ -31,6 +31,8 @@ const getInitialProfiles = (): Profiles => {
       coins: 0,
       unlockedItems: [],
       activityHistory: [],
+      currentWordSet: 1,
+      completedWordSets: [],
     },
     son: {
       id: 'son',
@@ -39,6 +41,8 @@ const getInitialProfiles = (): Profiles => {
       coins: 0,
       unlockedItems: [],
       activityHistory: [],
+      currentWordSet: 1,
+      completedWordSets: [],
     },
   };
 };
@@ -48,6 +52,7 @@ function App() {
 
   const [currentProfileId, setCurrentProfileId] = useState<ProfileId | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('profile-selection');
+  const [selectedWordSet, setSelectedWordSet] = useState<number>(1);
 
   const currentProfile = currentProfileId ? profiles[currentProfileId] : null;
 
@@ -76,10 +81,13 @@ function App() {
     setCurrentScreen('profile-selection');
   };
 
-  const handleStartActivity = (activity: 'reading' | 'words') => {
+  const handleStartActivity = (activity: 'reading' | 'words', wordSetId?: number) => {
     if (activity === 'reading') {
       setCurrentScreen('reading-race');
     } else {
+      // Set the selected word set if provided, otherwise use profile's current word set or default to 1
+      const wordSet = wordSetId || currentProfile?.currentWordSet || 1;
+      setSelectedWordSet(wordSet);
       setCurrentScreen('word-catcher');
     }
   };
@@ -125,14 +133,36 @@ function App() {
       totalWords,
     };
 
-    setProfiles((prev) => ({
-      ...prev,
-      [currentProfileId]: {
-        ...prev[currentProfileId],
-        coins: prev[currentProfileId].coins + coinsEarned,
-        activityHistory: [...prev[currentProfileId].activityHistory, result],
-      },
-    }));
+    // Check if they got 80%+ correct (mastery)
+    const masteryThreshold = 0.8;
+    const percentCorrect = score / totalWords;
+
+    setProfiles((prev) => {
+      const profile = prev[currentProfileId];
+      const currentSet = profile.currentWordSet || 1;
+      const completed = profile.completedWordSets || [];
+
+      // If mastered and not already in completed list
+      const newCompleted = percentCorrect >= masteryThreshold && !completed.includes(currentSet)
+        ? [...completed, currentSet]
+        : completed;
+
+      // Auto-advance to next set if mastered
+      const nextSet = percentCorrect >= masteryThreshold && currentSet < 5
+        ? currentSet + 1
+        : currentSet;
+
+      return {
+        ...prev,
+        [currentProfileId]: {
+          ...profile,
+          coins: profile.coins + coinsEarned,
+          activityHistory: [...profile.activityHistory, result],
+          currentWordSet: nextSet,
+          completedWordSets: newCompleted,
+        },
+      };
+    });
   };
 
   const handleUnlockItem = (itemId: UnlockableItem, cost: number) => {
@@ -179,6 +209,7 @@ function App() {
           currentCoins={currentProfile.coins}
           onComplete={handleWordComplete}
           onBack={handleBackToMenu}
+          wordSetId={selectedWordSet}
         />
       )}
 

@@ -32,6 +32,8 @@ export interface Profile {
   coins: number;
   unlockedItems: UnlockableItem[];
   activityHistory: ActivityResult[];
+  currentWordSet?: number; // Track which word set they're on (1-5)
+  completedWordSets?: number[]; // Track which sets they've mastered
 }
 
 export interface Profiles {
