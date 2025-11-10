@@ -38,6 +38,7 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
   const speakWord = (word: string) => {
     if (!('speechSynthesis' in window)) {
       console.warn('Text-to-speech not available in this browser');
+      setSpeechAvailable(false);
       return;
     }
 
@@ -45,18 +46,30 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.rate = 0.8;
-      utterance.lang = 'en-US';
+      // Small delay to ensure previous speech is cancelled
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.rate = 0.8;
+        utterance.lang = 'en-US';
 
-      // Handle speech errors
-      utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
-      };
+        // Handle speech events
+        utterance.onstart = () => {
+          console.log('Speaking word:', word);
+        };
 
-      window.speechSynthesis.speak(utterance);
+        utterance.onerror = (event) => {
+          console.error('Speech synthesis error:', event);
+        };
+
+        utterance.onend = () => {
+          console.log('Finished speaking word:', word);
+        };
+
+        window.speechSynthesis.speak(utterance);
+      }, 50);
     } catch (error) {
       console.error('Failed to speak word:', error);
+      setSpeechAvailable(false);
     }
   };
 
@@ -88,10 +101,17 @@ export const WordCatcher: React.FC<WordCatcherProps> = ({
   // Initialize options when component mounts or word changes
   useEffect(() => {
     if (currentWordIndex < currentWordSet.words.length) {
-      setOptions(generateOptions(currentWordSet.words[currentWordIndex]));
-      speakWord(currentWordSet.words[currentWordIndex]);
+      const word = currentWordSet.words[currentWordIndex];
+      setOptions(generateOptions(word));
+
+      // Small delay to ensure component is ready and avoid browser autoplay blocks
+      const timer = setTimeout(() => {
+        speakWord(word);
+      }, 100);
+
+      return () => clearTimeout(timer);
     }
-  }, [currentWordIndex]);
+  }, [currentWordIndex, currentWordSet.words]);
 
   // Cleanup speech on unmount
   useEffect(() => {
